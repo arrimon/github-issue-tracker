@@ -1,10 +1,11 @@
+// Loging Function done
 document.getElementById('login-btn')
     .addEventListener('click', () =>{
             const inputName = document.getElementById('user-name').value;
-            console.log(inputName);
+            // console.log(inputName); // debugging user name
             
             const inputPassword = document.getElementById('user-password').value;
-            console.log(inputPassword);
+            // console.log(inputPassword); // debugging user password
 
             if(inputName == 'admin' && inputPassword == 'admin123'){
                 alert('Loging Success');
