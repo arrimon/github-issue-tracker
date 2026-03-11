@@ -94,20 +94,6 @@ const displayCards = (issues) => {
                              issue.priority === 'medium' ? 'bg-orange-50 text-orange-400' : 
                              'bg-slate-100 text-slate-400';
 
-        // 3. Determine Label Color and Icon (Initialize inside the loop)
-        let labelColor = 'bg-slate-100 text-slate-400'; 
-        let iconName = 'tag';
-
-        if (issue.labels.includes('bug')) {
-            labelColor = 'bg-red-50 text-red-500';
-            iconName = 'bug';
-        } else if (issue.labels.includes('enhancement')) {
-            labelColor = 'bg-green-50 text-green-500';
-            iconName = 'sparkles';
-        } else if(issue.labels.includes('help-wanted')) { // Fixed the label name check
-            labelColor = 'bg-orange-50 text-orange-500';
-            iconName = 'life-buoy';
-        }
 
         // 4. Create the card string
         const cardHtml = `
@@ -124,20 +110,35 @@ const displayCards = (issues) => {
                     <h3 class="font-bold text-slate-800 leading-tight">${issue.title}</h3>
                     <p class="text-xs text-slate-400 line-clamp-2">${issue.description}</p>
                     
-                    <div class="flex gap-2">
+                    <div class="flex flex-wrap gap-2">
                         ${issue.labels.map(label => {
-                            // Added 'return' here!
-                            return `<span class="badge badge-sm ${labelColor} border-none px-2 py-3 text-[10px] font-bold uppercase flex items-center gap-1">
-                                        <i data-lucide="${iconName}" class="h-3 w-3"></i> 
-                                        ${label}
-                                    </span>`;
+                            // UNIQUE LOGIC FOR EVERY LABEL
+                            let color = 'bg-slate-100 text-slate-400';
+                            let icon = 'tag';
+
+                            if (label === 'bug') {
+                                color = 'bg-red-50 text-red-500';
+                                icon = 'bug';
+                            } else if (label === 'enhancement') {
+                                color = 'bg-green-50 text-green-500';
+                                icon = 'sparkles';
+                            } else if (label === 'help wanted' || label === 'help-wanted') {
+                                color = 'bg-orange-50 text-orange-500';
+                                icon = 'life-buoy';
+                            }
+
+                            return `
+                                <span class="badge badge-sm ${color} border-none px-2 py-3 text-[10px] font-bold uppercase flex items-center gap-1">
+                                    <i data-lucide="${icon}" class="h-3 w-3"></i> 
+                                    ${label}
+                                </span>`;
                         }).join('')}
                     </div>
                 </div>
 
                 <div class="p-4 border-t border-gray-50 bg-white space-y-1">
-                    <p class="text-[11px] text-slate-400">#by ${issue.author}</p>
-                    <p class="text-[11px] text-slate-400">${new Date(issue.createdAt).toLocaleDateString()}</p>
+                    <p class="text-[11px] text-slate-400">#1 by ${issue.author}</p>
+                    <p class="text-[11px] text-slate-400">${issue.createdAt}</p>
                 </div>
             </div>
         `;
