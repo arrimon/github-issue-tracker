@@ -1,9 +1,12 @@
+// define a global arry to store all data
+let allIssuesData = [];
 // Fetch all issues
 const allIssue = async () => {
     const url = 'https://phi-lab-server.vercel.app/api/v1/lab/issues'
     const res = await fetch(url);
     const data = await res.json();
     // console.log(data.data)
+    allIssuesData = data.data;
     totalIssue(data.data)
     displayCards(data.data)
 }
@@ -53,6 +56,28 @@ const totalIssue = (arrayData) => {
     const closedCount = closedIssue.length;
     console.log(`Closed Issue: ${closedCount}`)
 }
+
+// active function
+const setActiveButton = (clickedId) => {
+    // Array of your button IDs from HTML
+    const buttonIds = ['all-btn', 'open-btn', 'close-btn'];
+    
+    buttonIds.forEach((id) => {
+        const btn = document.getElementById(id);
+        
+        if (!btn) return; 
+
+        if (id === clickedId) {
+            // Add Active Styles
+            btn.classList.add('bg-[#4A00FF]', 'text-white');
+            btn.classList.remove('bg-white', 'text-slate-600');
+        } else {
+            // Remove Active Styles
+            btn.classList.remove('bg-[#4A00FF]', 'text-white');
+            btn.classList.add('bg-white', 'text-slate-600');
+        }
+    });
+};
 
 const displayCards = (issues) => {
     const cardContainer = document.getElementById('card-container');
@@ -130,15 +155,18 @@ const displayCards = (issues) => {
 
 document.getElementById('all-btn').addEventListener('click', () => {
     displayCards(allIssuesData); // Show everything
+    setActiveButton('all-btn')
 });
 
 document.getElementById('open-btn').addEventListener('click', () => {
     const openData = allIssuesData.filter(i => i.status === 'open');
     displayCards(openData); // Show only open
+    setActiveButton('open-btn')
 });
 
 document.getElementById('close-btn').addEventListener('click', () => {
     const closedData = allIssuesData.filter(i => i.status === 'closed');
     displayCards(closedData); // Show only closed
+    setActiveButton('close-btn')
 });
 allIssue()
