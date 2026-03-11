@@ -156,17 +156,20 @@ const displayCards = (issues) => {
 document.getElementById('all-btn').addEventListener('click', () => {
     displayCards(allIssuesData); // Show everything
     setActiveButton('all-btn')
+    totalIssue(allIssuesData);
 });
 
 document.getElementById('open-btn').addEventListener('click', () => {
     const openData = allIssuesData.filter(i => i.status === 'open');
     displayCards(openData); // Show only open
     setActiveButton('open-btn')
+    totalIssue(openData);
 });
 
 document.getElementById('close-btn').addEventListener('click', () => {
     const closedData = allIssuesData.filter(i => i.status === 'closed');
     displayCards(closedData); // Show only closed
     setActiveButton('close-btn')
+    totalIssue(closedData);
 });
 allIssue()
