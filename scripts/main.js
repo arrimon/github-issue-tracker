@@ -79,6 +79,7 @@ const setActiveButton = (clickedId) => {
     });
 };
 
+// Display Card 
 const displayCards = (issues) => {
     const cardContainer = document.getElementById('card-container');
     cardContainer.innerHTML = ''; // Clear container
@@ -174,3 +175,59 @@ document.getElementById('close-btn').addEventListener('click', () => {
     totalIssue(closedData);
 });
 allIssue()
+
+
+// Search Issues
+document.getElementById('btn-search').addEventListener('click', async () => {
+
+    const input = document.getElementById('input-search');
+    const searchValue = input.value.trim();
+
+    if (!searchValue) {
+        displayCards(allIssuesData);
+        totalIssue(allIssuesData);
+        return;
+    }
+
+    const url = `https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=${searchValue}`;
+
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        const issues = data.data || [];
+
+        console.log("Search Result:", issues);
+
+        if (issues.length === 0) {
+            // If value == 0 or not matche then showing this message
+            const container = document.getElementById('card-container');
+            container.innerHTML = `
+                <div class="col-span-full text-center py-10">
+                    <h3 class="text-xl font-bold text-slate-500">
+                        Issue is not available
+                    </h3>
+                </div>
+            `;
+            totalIssue([]);
+            return;
+        }
+
+        displayCards(issues);
+        totalIssue(issues);
+
+    } catch (err) {
+        // If server not response properly then showing this message
+        console.error("Search Error:", err);
+
+        const container = document.getElementById('card-container');
+        container.innerHTML = `
+            <div class="col-span-full text-center py-10">
+                <h3 class="text-xl font-bold text-red-500">
+                    Failed to fetch issues
+                </h3>
+            </div>
+        `;
+    }
+
+});
