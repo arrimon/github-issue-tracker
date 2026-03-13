@@ -11,27 +11,6 @@ const allIssue = async () => {
     displayCards(data.data)
 }
 
-// {
-// "status": "success",
-// "message": "Issues fetched successfully",
-// "data": [
-// {
-// "id": 1,
-// "title": "Fix navigation menu on mobile devices",
-// "description": "The navigation menu doesn't collapse properly on mobile devices. Need to fix the responsive behavior.",
-// "status": "open",
-// "labels": [
-// "bug",
-// "help wanted"
-// ],
-// "priority": "high",
-// "author": "john_doe",
-// "assignee": "jane_smith",
-// "createdAt": "2024-01-15T10:30:00Z",
-// "updatedAt": "2024-01-15T10:30:00Z"
-// },
-
-
 // Issue Count Functions
 const totalIssue = (arrayData) => {
     // 1. Get the all number of items in the array
@@ -79,6 +58,137 @@ const setActiveButton = (clickedId) => {
     });
 };
 
+// Modal codes
+const showIssueDetails = async (id) => {
+
+    try {
+
+        const res = await fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issue/${id}`);
+        const data = await res.json();
+
+        const issue = data.data;
+        // get issue Modal
+        const modal = document.getElementById('issue_modal');
+        console.log(modal)
+
+        modal.innerHTML = `
+            <div class="modal-box max-w-xl p-0 overflow-hidden">
+
+                <!-- Top Status Bar -->
+                <div class="p-6 border-t-6 ${issue.status === 'closed' ? 'border-purple-500' : 'border-emerald-400'}">
+
+                    <!-- Title -->
+                    <h3 class="text-2xl font-bold text-slate-800 mb-2">
+                        ${issue.title}
+                    </h3>
+
+                    <!-- Meta Info -->
+                    <div class="flex items-center gap-3 text-sm mb-4">
+
+                        <span class="badge rounded-full ${issue.status === 'open' ? 'bg-emerald-500' : 'bg-purple-500'} text-white border-none px-4 py-3 uppercase text-[10px] font-bold">
+                            ${issue.status}
+                        </span>
+
+                        <span class="text-slate-400">
+                            • Opened by 
+                            <span class="font-medium text-slate-700">
+                                ${issue.author}
+                            </span>
+                        </span>
+
+                        <span class="text-slate-400">
+                            • ${new Date(issue.createdAt).toLocaleDateString()}
+                        </span>
+
+                    </div>
+
+                    <!-- Labels -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        ${issue.labels.map(label => {
+
+                            let color = 'bg-slate-100 text-slate-500';
+                            let icon = 'tag';
+
+                            if (label === 'bug') {
+                                color = 'bg-red-50 text-red-500';
+                                icon = 'bug';
+                            }
+
+                            if (label === 'enhancement') {
+                                color = 'bg-green-50 text-green-500';
+                                icon = 'sparkles';
+                            }
+
+                            if (label === 'help wanted' || label === 'help-wanted') {
+                                color = 'bg-orange-50 text-orange-500';
+                                icon = 'life-buoy';
+                            }
+
+                            return `
+                            <span class="badge ${color} border-none px-3 py-3 text-[10px] font-bold uppercase flex items-center gap-1">
+                                <i data-lucide="${icon}" class="w-3 h-3"></i>
+                                ${label}
+                            </span>
+                            `;
+
+                        }).join('')}
+                    </div>
+
+                    <!-- Description -->
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6">
+                        ${issue.description}
+                    </p>
+
+                </div>
+
+                <!-- Bottom Info Section -->
+                <div class="bg-slate-50 p-6 flex justify-between items-center">
+
+                    <!-- Assignee -->
+                    <div>
+                        <p class="text-xs text-slate-400">Assignee</p>
+                        <p class="font-semibold text-slate-700">
+                            ${issue.assignee || 'Unassigned'}
+                        </p>
+                    </div>
+
+                    <!-- Priority -->
+                    <div>
+                        <p class="text-xs text-slate-400 mb-1">Priority</p>
+
+                        <span class="badge ${
+                            issue.priority === 'high'
+                            ? 'bg-red-500 text-white'
+                            : issue.priority === 'medium'
+                            ? 'bg-orange-400 text-white'
+                            : 'bg-slate-400 text-white'
+                        } border-none px-4 py-3 uppercase text-[10px] font-bold">
+                            ${issue.priority}
+                        </span>
+                    </div>
+
+                    <!-- Close Button -->
+                    <form method="dialog">
+                        <button class="btn btn-sm bg-[#4A00FF] hover:bg-[#3a00cc] text-white border-none">
+                            Close
+                        </button>
+                    </form>
+
+                </div>
+
+            </div>
+        `;
+        modal.showModal();
+    } catch (err) {
+        console.error("Issue Fetch Error:", err);
+    }
+
+    // lucid icon in the Modal
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+};
+
 // Display Card 
 const displayCards = (issues) => {
     const cardContainer = document.getElementById('card-container');
@@ -98,7 +208,7 @@ const displayCards = (issues) => {
 
         // 4. Create the card string
         const cardHtml = `
-            <div class="card bg-white border border-gray-100 rounded-lg overflow-hidden flex flex-col h-full shadow-sm hover:shadow-md transition-shadow">
+            <div onclick="showIssueDetails(${issue.id})" class="card bg-white border border-gray-100 rounded-lg overflow-hidden flex flex-col h-full shadow-sm hover:shadow-md transition-shadow">
                 <div class="p-4 flex-grow space-y-3 border-t-6 ${topBorderColor}">
                     <div class="flex justify-between items-start">
                         <span class="text-emerald-500 text-lg">
